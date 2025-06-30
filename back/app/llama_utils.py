@@ -12,16 +12,15 @@ def analyze_diary(diary_text: str) -> tuple[str, str]:
         response = requests.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "llama3",
+                "model": "llama3.2:3b",  # ✅ 정확한 모델명으로 수정
                 "prompt": prompt,
                 "stream": False
             },
             timeout=60
         )
-        
         response.raise_for_status()
         output = response.json().get("response", "")
-        
+
         summary = ""
         emotion = ""
 
@@ -35,6 +34,4 @@ def analyze_diary(diary_text: str) -> tuple[str, str]:
 
     except requests.exceptions.RequestException as e:
         print(f"Error while calling Ollama: {e}")
-        if response:
-            print(f"Ollama response: {response.text}")
         return "요약 실패", "감정 분석 실패"
