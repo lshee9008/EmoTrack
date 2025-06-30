@@ -8,13 +8,32 @@ def analyze_diary(diary_text: str) -> tuple[str, str]:
     감정: ...
     """
 
-    response = requests.post(
-        "http://localhost:11434/api/generate",
-        json={"model": "llama3", "prompt": prompt, "stream": False}
-    )
+    try:
+        response = requests.post(
+            "http://ollama:11434/api/generate",
+            json={
+                "model": "llama3.2:3b",
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=60
+        )
+        response.raise_for_status()
+        output = response.json().get("response", "")
+        
+        summary = ""
+        emotion = ""
 
-    output = response.json()["response"]
-    lines = output.strip().split("\n")
-    summary = lines[0].replace("요약:", "").strip()
-    emotion = lines[1].replace("감정:", "").strip()
-    return summary, emotion
+        for line in output.strip().split("\n"):
+            if "요약:" in line:
+                summary = line.split("요약:")[1].strip()
+            elif "감정:" in line:
+                emotion = line.split("감정:")[1].strip()
+
+        return summary, emotion
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error while calling Ollama: {e}")
+        if response:
+            print(f"Ollama response: {response.text}")
+        return "요약 실패", "감정 분석 실패"

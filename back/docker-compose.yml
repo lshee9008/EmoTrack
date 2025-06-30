@@ -6,10 +6,18 @@ services:
       - "8000:8000"
     environment:
       - OPENWEATHER_API_KEY=your_openweather_api_key
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    entrypoint: ["ollama", "serve"]  # 서버 실행
+
+
   nginx:
     image: nginx
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:

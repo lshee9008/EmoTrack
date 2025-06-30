@@ -7,9 +7,8 @@ class DiaryRequest(BaseModel):
 class Song(BaseModel):
     title: str
     artist: str
-
 class DiaryResponse(BaseModel):
     summary: str
     emotion: str
-    weather: str
+    # weather: str
     song: Song
