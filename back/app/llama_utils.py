@@ -12,12 +12,13 @@ def analyze_diary(diary_text: str) -> tuple[str, str]:
         response = requests.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "llama3.2:3b",
+                "model": "llama3",
                 "prompt": prompt,
                 "stream": False
             },
             timeout=60
         )
+        
         response.raise_for_status()
         output = response.json().get("response", "")
         
