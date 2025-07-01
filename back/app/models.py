@@ -10,5 +10,5 @@ class Song(BaseModel):
 class DiaryResponse(BaseModel):
     summary: str
     emotion: str
-    # weather: str
+    weather: str
     song: Song
