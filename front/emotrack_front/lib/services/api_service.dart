@@ -5,7 +5,7 @@ import '../models/diary_response.dart';
 
 class ApiService {
   static const String baseUrl =
-      'https://your-api.com'; // Replace with your API URL
+      'http://localhost:8000'; // Replace with your API URL
 
   Future<DiaryResponse> analyzeDiary(DiaryRequest request) async {
     final response = await http.post(

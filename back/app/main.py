@@ -62,5 +62,6 @@ async def analyze(diary: DiaryRequest):
     summary, emotion = analyze_diary(diary.diary)
     weather = get_weather(diary.date)
     song = recommend_song(emotion)
+    print(DiaryResponse(summary=summary, emotion=emotion, weather=weather, song=song))
     return DiaryResponse(summary=summary, emotion=emotion, weather=weather, song=song)
     # return DiaryResponse(summary=summary, emotion=emotion, song=song)

@@ -2,7 +2,7 @@ class DiaryResponse {
   final String summary;
   final String emotion;
   final String weather;
-  final String song;
+  final Map<String, dynamic> song;
 
   DiaryResponse({
     required this.summary,
