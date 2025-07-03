@@ -43,6 +43,7 @@ dependencies:
   sqflite_common_ffi: ^2.3.0  # 또는 사용 중인 버전
   flutter_staggered_animations: ^1.1.1
   shimmer: ^3.0.0
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:

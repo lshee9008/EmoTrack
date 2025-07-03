@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/diary_provider.dart';
 import '../screens/diary_detail_screen.dart';
 
@@ -9,7 +9,7 @@ class DiaryEntryScreen extends StatefulWidget {
   const DiaryEntryScreen({super.key});
 
   @override
-  _DiaryEntryScreenState createState() => _DiaryEntryScreenState();
+  State<DiaryEntryScreen> createState() => _DiaryEntryScreenState();
 }
 
 class _DiaryEntryScreenState extends State<DiaryEntryScreen>
@@ -19,19 +19,19 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
   DateTime _selectedDate = DateTime.now();
   final _dateFormatter = DateFormat('yyyy-MM-dd');
   late AnimationController _controller;
-  late Animation<double> _cardFadeAnimation;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 800),
     );
-    _cardFadeAnimation = Tween<double>(
+    _fadeAnimation = Tween(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _controller.forward();
   }
 
@@ -43,7 +43,7 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
@@ -51,15 +51,10 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Colors.blue.shade800,
+            colorScheme: ColorScheme.light(
+              primary: Colors.brown.shade400,
               onPrimary: Colors.white,
-              surface: Colors.blue.shade50,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.blue.shade800,
-              ),
+              surface: Colors.brown.shade50,
             ),
           ),
           child: child!,
@@ -77,238 +72,65 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: const Color(0xFFFFFBEA),
       appBar: AppBar(
         title: Text(
-          '일기 작성',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-            letterSpacing: 1.0,
+          '나의 일기장',
+          style: GoogleFonts.nanumPenScript(
+            fontSize: 28,
+            color: Colors.brown.shade700,
           ),
         ),
-        backgroundColor: Colors.blue.shade800,
-        elevation: 4,
-        shadowColor: Colors.blue.shade400.withOpacity(0.6),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 24),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        backgroundColor: Colors.brown.shade100,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.brown.shade700),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 28.0),
-          child: FadeTransition(
-            opacity: _cardFadeAnimation,
-            child: AnimationLimiter(
-              child: Hero(
-                tag: 'diary_${_dateFormatter.format(_selectedDate)}',
-                child: Card(
-                  elevation: 6,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: AnimationConfiguration.toStaggeredList(
-                          duration: const Duration(milliseconds: 900),
-                          childAnimationBuilder: (widget) => SlideAnimation(
-                            verticalOffset: 60.0,
-                            curve: Curves.bounceOut,
-                            child: FadeInAnimation(child: widget),
-                          ),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Hero(
+            tag: 'diary_${_dateFormatter.format(_selectedDate)}',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 날짜 포스트잇
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Transform.rotate(
+                    angle: -0.04,
+                    child: GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.yellow.shade100,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade300,
+                              blurRadius: 4,
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Diary Entry Input
+                            Icon(
+                              Icons.calendar_today,
+                              size: 20,
+                              color: Colors.brown.shade600,
+                            ),
+                            const SizedBox(width: 8),
                             Text(
-                              'Diary Entry',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.blue.shade900,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.blue.shade200.withOpacity(0.5),
-                                ),
-                                borderRadius: BorderRadius.circular(14.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blue.shade100.withOpacity(
-                                      0.3,
-                                    ),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                              child: TextFormField(
-                                controller: _diaryController,
-                                decoration: InputDecoration(
-                                  hintText: 'Write about your day...',
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.all(16.0),
-                                  filled: true,
-                                  fillColor: Colors.blue.shade50.withOpacity(
-                                    0.2,
-                                  ),
-                                ),
-                                maxLines: 8,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Please write something in your diary';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            // Date Picker
-                            Text(
-                              'Date',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.blue.shade900,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            GestureDetector(
-                              onTap: () => _selectDate(context),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14.0,
-                                  horizontal: 16.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.blue.shade200.withOpacity(
-                                      0.5,
-                                    ),
-                                  ),
-                                  borderRadius: BorderRadius.circular(14.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.blue.shade100.withOpacity(
-                                        0.3,
-                                      ),
-                                      blurRadius: 10,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                  color: Colors.blue.shade50.withOpacity(0.2),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      _dateFormatter.format(_selectedDate),
-                                      style: theme.textTheme.bodyLarge
-                                          ?.copyWith(
-                                            color: Colors.blue.shade900,
-                                          ),
-                                    ),
-                                    Icon(
-                                      Icons.calendar_today,
-                                      color: Colors.blue.shade800,
-                                      size: 24,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 28),
-                            // Submit Button
-                            Center(
-                              child: Consumer<DiaryProvider>(
-                                builder: (context, provider, child) {
-                                  return ElevatedButton(
-                                    style:
-                                        ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 32.0,
-                                            vertical: 16.0,
-                                          ),
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              14.0,
-                                            ),
-                                          ),
-                                          elevation: 3,
-                                        ).copyWith(
-                                          backgroundColor:
-                                              MaterialStateProperty.resolveWith(
-                                                (states) {
-                                                  if (states.contains(
-                                                    MaterialState.pressed,
-                                                  )) {
-                                                    return Colors.blue.shade700;
-                                                  }
-                                                  return Colors.blue.shade800;
-                                                },
-                                              ),
-                                        ),
-                                    onPressed: provider.isLoading
-                                        ? null
-                                        : () async {
-                                            if (_formKey.currentState!
-                                                .validate()) {
-                                              try {
-                                                final entry = await provider
-                                                    .analyzeDiary(
-                                                      _diaryController.text,
-                                                      _dateFormatter.format(
-                                                        _selectedDate,
-                                                      ),
-                                                    );
-                                                if (!mounted) return;
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DiaryDetailScreen(
-                                                          diary: entry,
-                                                        ),
-                                                  ),
-                                                );
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text('Error: $e'),
-                                                    backgroundColor:
-                                                        theme.colorScheme.error,
-                                                  ),
-                                                );
-                                              }
-                                            }
-                                          },
-                                    child: provider.isLoading
-                                        ? SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2.5,
-                                            ),
-                                          )
-                                        : Text(
-                                            'Analyze Diary',
-                                            style: theme.textTheme.labelLarge
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                          ),
-                                  );
-                                },
+                              _dateFormatter.format(_selectedDate),
+                              style: GoogleFonts.nanumPenScript(
+                                fontSize: 20,
+                                color: Colors.brown.shade700,
                               ),
                             ),
                           ],
@@ -317,11 +139,133 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 24),
+                // 일기장 카드
+                Card(
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  color: Colors.brown.shade50,
+                  child: Stack(
+                    children: [
+                      // 노트 줄
+                      Positioned.fill(
+                        child: CustomPaint(painter: _NoteLinePainter()),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Form(
+                          key: _formKey,
+                          child: TextFormField(
+                            controller: _diaryController,
+                            maxLines: 16,
+                            style: GoogleFonts.nanumPenScript(
+                              fontSize: 20,
+                              color: Colors.brown.shade800,
+                            ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '오늘 있었던 이야기를 자유롭게 적어보세요...',
+                              hintStyle: GoogleFonts.nanumPenScript(
+                                color: Colors.brown.shade300,
+                                fontSize: 20,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return '내용을 작성해주세요.';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                // 버튼
+                Center(
+                  child: Consumer<DiaryProvider>(
+                    builder: (context, provider, _) {
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.brown.shade400,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: provider.isLoading
+                            ? null
+                            : () async {
+                                if (_formKey.currentState!.validate()) {
+                                  try {
+                                    final entry = await provider.analyzeDiary(
+                                      _diaryController.text,
+                                      _dateFormatter.format(_selectedDate),
+                                    );
+                                    if (!mounted) return;
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            DiaryDetailScreen(diary: entry),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('오류: $e')),
+                                    );
+                                  }
+                                }
+                              },
+                        child: provider.isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                '감정 분석하기',
+                                style: GoogleFonts.nanumPenScript(
+                                  fontSize: 22,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
+}
+
+class _NoteLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.brown.shade100
+      ..strokeWidth = 1;
+
+    final lineHeight = 32.0;
+    for (double y = lineHeight; y < size.height; y += lineHeight) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
