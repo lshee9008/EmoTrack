@@ -6,61 +6,110 @@ import '../screens/diary_entry_screen.dart';
 import '../screens/diary_detail_screen.dart';
 import '../widgets/diary_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _fabController;
+  late Animation<double> _fabAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _fabAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fabController, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _fabController.dispose();
+    super.dispose();
+  }
 
   Future<bool?> _showDeleteDialog(BuildContext context, ThemeData theme) {
     return showDialog<bool>(
       context: context,
+      barrierColor: Colors.black.withOpacity(0.3),
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(24.0),
         ),
-        backgroundColor: theme.colorScheme.surface.withOpacity(0.95),
-        elevation: 8,
+        backgroundColor: theme.colorScheme.surface.withOpacity(0.9),
+        elevation: 10,
         child: Container(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(24.0),
             border: Border.all(
-              color: theme.colorScheme.primary.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withOpacity(0.2),
               width: 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Delete Diary',
+                'Delete Diary Entry',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
-                'Are you sure you want to delete this diary entry? This action cannot be undone.',
+                'Are you sure you want to delete this entry? This action is permanent.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.8),
+                  height: 1.4,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   TextButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
                     onPressed: () => Navigator.pop(context, false),
                     child: Text(
                       'Cancel',
                       style: TextStyle(
-                        color: theme.colorScheme.primary,
+                        color: Colors.blue.shade600,
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ),
                     ),
                   ),
                   TextButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
                     onPressed: () => Navigator.pop(context, true),
                     child: Text(
                       'Delete',
@@ -90,9 +139,9 @@ class HomeScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              theme.colorScheme.primary.withOpacity(0.3),
-              theme.colorScheme.secondary.withOpacity(0.2),
-              theme.colorScheme.background,
+              Colors.blue.shade100,
+              Colors.blue.shade50.withOpacity(0.8),
+              Colors.amber.shade50,
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -104,13 +153,13 @@ class HomeScreen extends StatelessWidget {
                 'My Diary',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: theme.colorScheme.onPrimary,
-                  letterSpacing: 0.5,
+                  color: Colors.white,
+                  letterSpacing: 0.8,
                 ),
               ),
-              backgroundColor: theme.colorScheme.primary,
-              elevation: 4,
-              shadowColor: theme.colorScheme.primary.withOpacity(0.3),
+              backgroundColor: Colors.blue.shade600,
+              elevation: 6,
+              shadowColor: Colors.blue.shade600.withOpacity(0.4),
               floating: true,
               snap: true,
               pinned: true,
@@ -120,10 +169,7 @@ class HomeScreen extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.primary.withOpacity(0.7),
-                      ],
+                      colors: [Colors.blue.shade600, Colors.blue.shade400],
                     ),
                   ),
                 ),
@@ -134,8 +180,8 @@ class HomeScreen extends StatelessWidget {
                 onRefresh: () async {
                   await context.read<DiaryProvider>().fetchDiaries();
                 },
-                color: theme.colorScheme.onPrimary,
-                backgroundColor: theme.colorScheme.primary,
+                color: Colors.white,
+                backgroundColor: Colors.blue.shade600,
                 displacement: 20.0,
                 child: Consumer<DiaryProvider>(
                   builder: (context, provider, child) {
@@ -145,11 +191,12 @@ class HomeScreen extends StatelessWidget {
                         child: Center(
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              theme.colorScheme.primary,
+                              Colors.blue.shade600,
                             ),
                             strokeWidth: 3.0,
-                            backgroundColor: theme.colorScheme.primary
-                                .withOpacity(0.2),
+                            backgroundColor: Colors.blue.shade100.withOpacity(
+                              0.3,
+                            ),
                           ),
                         ),
                       );
@@ -162,42 +209,42 @@ class HomeScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.all(20.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: theme.colorScheme.primary.withOpacity(
-                                    0.1,
-                                  ),
+                                  color: Colors.amber.shade100.withOpacity(0.3),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: theme.colorScheme.primary
-                                          .withOpacity(0.2),
-                                      blurRadius: 10,
-                                      spreadRadius: 2,
+                                      color: Colors.blue.shade200.withOpacity(
+                                        0.3,
+                                      ),
+                                      blurRadius: 15,
+                                      spreadRadius: 5,
                                     ),
                                   ],
                                 ),
                                 child: Icon(
                                   Icons.book_rounded,
-                                  size: 80,
-                                  color: theme.colorScheme.primary,
+                                  size: 90,
+                                  color: Colors.blue.shade600,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 24),
                               Text(
-                                'Your Diary Awaits!',
-                                style: theme.textTheme.headlineSmall?.copyWith(
+                                'Begin Your Story!',
+                                style: theme.textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.onSurface,
+                                  color: Colors.blue.shade800,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 12),
                               Text(
-                                'Capture your thoughts and start your journey.',
+                                'Write your first diary entry to capture your moments.',
                                 style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: theme.colorScheme.onSurface
-                                      .withOpacity(0.7),
+                                  color: Colors.blue.shade600.withOpacity(0.8),
                                   fontStyle: FontStyle.italic,
+                                  height: 1.4,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -212,131 +259,142 @@ class HomeScreen extends StatelessWidget {
                         shrinkWrap: true,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
-                          vertical: 16.0,
+                          vertical: 20.0,
                         ),
                         itemCount: provider.diaries.length,
                         itemBuilder: (context, index) {
                           final diary = provider.diaries[index];
                           return AnimationConfiguration.staggeredList(
                             position: index,
-                            duration: const Duration(milliseconds: 500),
+                            duration: const Duration(milliseconds: 600),
                             child: SlideAnimation(
-                              verticalOffset: 50.0,
+                              verticalOffset: 60.0,
                               child: FadeInAnimation(
                                 child: ScaleAnimation(
-                                  scale: 0.95,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 16.0,
-                                    ),
-                                    child: DiaryCard(
-                                      diary: diary,
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder:
-                                                (
-                                                  context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                ) => DiaryDetailScreen(
-                                                  diary: diary,
-                                                ),
-                                            transitionsBuilder:
-                                                (
-                                                  context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                  child,
-                                                ) {
-                                                  const begin = Offset(
-                                                    1.0,
-                                                    0.0,
-                                                  );
-                                                  const end = Offset.zero;
-                                                  const curve =
-                                                      Curves.easeInOut;
-                                                  var tween =
-                                                      Tween(
-                                                        begin: begin,
-                                                        end: end,
-                                                      ).chain(
-                                                        CurveTween(
-                                                          curve: curve,
+                                  scale: 0.9,
+                                  child: BounceAnimation(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 16.0,
+                                      ),
+                                      child: DiaryCard(
+                                        diary: diary,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder:
+                                                  (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) => DiaryDetailScreen(
+                                                    diary: diary,
+                                                  ),
+                                              transitionsBuilder:
+                                                  (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                    child,
+                                                  ) {
+                                                    const begin = Offset(
+                                                      1.0,
+                                                      0.0,
+                                                    );
+                                                    const end = Offset.zero;
+                                                    const curve =
+                                                        Curves.easeInOutCubic;
+                                                    var tween =
+                                                        Tween(
+                                                          begin: begin,
+                                                          end: end,
+                                                        ).chain(
+                                                          CurveTween(
+                                                            curve: curve,
+                                                          ),
+                                                        );
+                                                    var offsetAnimation =
+                                                        animation.drive(tween);
+                                                    return SlideTransition(
+                                                      position: offsetAnimation,
+                                                      child: FadeTransition(
+                                                        opacity: animation,
+                                                        child: child,
+                                                      ),
+                                                    );
+                                                  },
+                                            ),
+                                          );
+                                        },
+                                        onDelete: () async {
+                                          final shouldDelete =
+                                              await _showDeleteDialog(
+                                                context,
+                                                theme,
+                                              );
+                                          if (shouldDelete == true) {
+                                            try {
+                                              await provider.deleteDiary(
+                                                diary.id!,
+                                              );
+                                              if (!context.mounted) return;
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: const Text(
+                                                    'Diary deleted successfully',
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.blue.shade600,
+                                                  duration: const Duration(
+                                                    seconds: 2,
+                                                  ),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12.0,
                                                         ),
-                                                      );
-                                                  var offsetAnimation =
-                                                      animation.drive(tween);
-                                                  return SlideTransition(
-                                                    position: offsetAnimation,
-                                                    child: child,
-                                                  );
-                                                },
-                                          ),
-                                        );
-                                      },
-                                      onDelete: () async {
-                                        final shouldDelete =
-                                            await _showDeleteDialog(
-                                              context,
-                                              theme,
-                                            );
-                                        if (shouldDelete == true) {
-                                          try {
-                                            await provider.deleteDiary(
-                                              diary.id!,
-                                            );
-                                            if (!context.mounted) return;
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: const Text(
-                                                  'Diary deleted successfully',
+                                                  ),
+                                                  elevation: 8,
+                                                  margin: const EdgeInsets.all(
+                                                    16.0,
+                                                  ),
                                                 ),
-                                                backgroundColor:
-                                                    theme.colorScheme.primary,
-                                                duration: const Duration(
-                                                  seconds: 2,
+                                              );
+                                            } catch (e) {
+                                              if (!context.mounted) return;
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text('Error: $e'),
+                                                  backgroundColor:
+                                                      theme.colorScheme.error,
+                                                  duration: const Duration(
+                                                    seconds: 3,
+                                                  ),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12.0,
+                                                        ),
+                                                  ),
+                                                  elevation: 8,
+                                                  margin: const EdgeInsets.all(
+                                                    16.0,
+                                                  ),
                                                 ),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        12.0,
-                                                      ),
-                                                ),
-                                                elevation: 6,
-                                              ),
-                                            );
-                                          } catch (e) {
-                                            if (!context.mounted) return;
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text('Error: $e'),
-                                                backgroundColor:
-                                                    theme.colorScheme.error,
-                                                duration: const Duration(
-                                                  seconds: 3,
-                                                ),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        12.0,
-                                                      ),
-                                                ),
-                                                elevation: 6,
-                                              ),
-                                            );
+                                              );
+                                            }
                                           }
-                                        }
-                                      },
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -354,16 +412,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: ScaleTransition(
-        scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-          CurvedAnimation(
-            parent: AnimationController(
-              vsync: Navigator.of(context),
-              duration: const Duration(milliseconds: 600),
-              value: 1.0,
-            )..repeat(reverse: true),
-            curve: Curves.easeInOut,
-          ),
-        ),
+        scale: _fabAnimation,
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -375,7 +424,7 @@ class HomeScreen extends StatelessWidget {
                     (context, animation, secondaryAnimation, child) {
                       const begin = Offset(0.0, 1.0);
                       const end = Offset.zero;
-                      const curve = Curves.easeInOut;
+                      const curve = Curves.easeInOutCubic;
                       var tween = Tween(
                         begin: begin,
                         end: end,
@@ -383,22 +432,73 @@ class HomeScreen extends StatelessWidget {
                       var offsetAnimation = animation.drive(tween);
                       return SlideTransition(
                         position: offsetAnimation,
-                        child: child,
+                        child: FadeTransition(opacity: animation, child: child),
                       );
                     },
               ),
             );
           },
-          backgroundColor: theme.colorScheme.primary,
-          foregroundColor: theme.colorScheme.onPrimary,
+          backgroundColor: Colors.blue.shade600,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24.0),
+            borderRadius: BorderRadius.circular(28.0),
           ),
-          elevation: 6,
-          child: const Icon(Icons.edit, size: 32),
-          tooltip: 'Write New Diary Entry',
+          elevation: 8,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.shade400.withOpacity(0.4),
+                  blurRadius: 15,
+                  spreadRadius: 4,
+                ),
+              ],
+            ),
+            child: const Icon(Icons.edit, size: 34),
+          ),
+          tooltip: 'Create New Diary Entry',
         ),
       ),
     );
+  }
+}
+
+class BounceAnimation extends StatefulWidget {
+  final Widget child;
+
+  const BounceAnimation({required this.child, super.key});
+
+  @override
+  _BounceAnimationState createState() => _BounceAnimationState();
+}
+
+class _BounceAnimationState extends State<BounceAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _animation = Tween<double>(begin: 0.98, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutBack),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(scale: _animation, child: widget.child);
   }
 }
