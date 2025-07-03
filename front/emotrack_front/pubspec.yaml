@@ -41,6 +41,7 @@ dependencies:
   path_provider: ^2.1.4
   path: ^1.9.0
   sqflite_common_ffi: ^2.3.0  # 또는 사용 중인 버전
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:
