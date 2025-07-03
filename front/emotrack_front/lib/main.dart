@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'providers/diary_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() {
+  // ✅ FFI 초기화
+  sqfliteFfiInit();
+
+  // ✅ 전역 DB 팩토리 설정
+  databaseFactory = databaseFactoryFfi;
   runApp(
     ChangeNotifierProvider(
       create: (context) => DiaryProvider(),
