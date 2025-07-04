@@ -17,7 +17,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     print(widget.diary.song);
     final theme = Theme.of(context);
     final dateStyle = GoogleFonts.nanumPenScript(
-      fontSize: 24,
+      fontSize: 28,
       color: Colors.brown.shade700,
       fontWeight: FontWeight.bold,
     );
@@ -43,11 +43,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           style: GoogleFonts.nanumPenScript(
             fontSize: 28,
             color: Colors.brown.shade800,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(18.0),
         child: Hero(
           tag: 'diary_${widget.diary.date}',
           child: Card(
@@ -74,7 +75,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                 children: [
                   // 날짜
                   Center(child: Text(widget.diary.date, style: dateStyle)),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   // 내용
                   Text('📖 내용', style: sectionTitleStyle),
                   const SizedBox(height: 12),

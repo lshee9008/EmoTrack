@@ -50,14 +50,15 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFFFFBEA),
       appBar: AppBar(
-        backgroundColor: Colors.brown.shade100,
+        backgroundColor: const Color.fromARGB(255, 178, 130, 113),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.brown.shade700),
         title: Text(
           '감성 일기장',
           style: GoogleFonts.nanumPenScript(
-            fontSize: 28,
+            fontSize: 38,
             color: Colors.brown.shade800,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen>
           MaterialPageRoute(builder: (_) => const DiaryEntryScreen()),
         ),
         backgroundColor: Colors.brown.shade300,
-        child: const Icon(Icons.edit),
+        child: const Icon(Icons.edit, color: Colors.white),
       ),
     );
   }
