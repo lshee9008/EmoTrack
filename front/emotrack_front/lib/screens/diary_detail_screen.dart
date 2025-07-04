@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/diary_entry.dart';
 
-class DiaryDetailScreen extends StatelessWidget {
+class DiaryDetailScreen extends StatefulWidget {
   final DiaryEntry diary;
 
   const DiaryDetailScreen({super.key, required this.diary});
 
   @override
+  State<DiaryDetailScreen> createState() => _DiaryDetailScreenState();
+}
+
+class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
+  @override
   Widget build(BuildContext context) {
+    print(widget.diary.song);
     final theme = Theme.of(context);
     final dateStyle = GoogleFonts.nanumPenScript(
       fontSize: 24,
@@ -43,7 +49,7 @@ class DiaryDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Hero(
-          tag: 'diary_${diary.date}',
+          tag: 'diary_${widget.diary.date}',
           child: Card(
             elevation: 6,
             shape: RoundedRectangleBorder(
@@ -67,24 +73,24 @@ class DiaryDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 날짜
-                  Center(child: Text(diary.date, style: dateStyle)),
+                  Center(child: Text(widget.diary.date, style: dateStyle)),
                   const SizedBox(height: 32),
                   // 내용
                   Text('📖 내용', style: sectionTitleStyle),
                   const SizedBox(height: 12),
-                  Text(diary.diary, style: contentStyle),
+                  Text(widget.diary.diary, style: contentStyle),
                   const SizedBox(height: 28),
                   // 요약
                   Text('✍️ 요약', style: sectionTitleStyle),
                   const SizedBox(height: 12),
-                  Text(diary.summary, style: contentStyle),
+                  Text(widget.diary.summary, style: contentStyle),
                   const SizedBox(height: 28),
                   // 감정
                   Text('🧠 감정', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Chip(
                     label: Text(
-                      diary.emotion,
+                      widget.diary.emotion,
                       style: GoogleFonts.nanumPenScript(
                         fontSize: 20,
                         color: Colors.brown.shade800,
@@ -111,12 +117,12 @@ class DiaryDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        _getWeatherIcon(diary.weather),
+                        _getWeatherIcon(widget.diary.weather),
                         color: Colors.brown.shade700,
                         size: 28,
                       ),
                       const SizedBox(width: 12),
-                      Text(diary.weather, style: contentStyle),
+                      Text(widget.diary.weather, style: contentStyle),
                     ],
                   ),
                   const SizedBox(height: 28),
@@ -134,13 +140,13 @@ class DiaryDetailScreen extends StatelessWidget {
                         color: Colors.brown.shade600,
                       ),
                       title: Text(
-                        diary.song['title'] ?? 'Unknown Title',
+                        widget.diary.song['title'] ?? 'Unknown Title',
                         style: contentStyle.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       subtitle: Text(
-                        diary.song['artist'] ?? 'Unknown Artist',
+                        widget.diary.song['artist'] ?? 'Unknown Artist',
                         style: contentStyle.copyWith(fontSize: 18),
                       ),
                       onTap: () {

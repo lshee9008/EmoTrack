@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -209,11 +210,14 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
                                       _diaryController.text,
                                       _dateFormatter.format(_selectedDate),
                                     );
+
+                                    print(entry.song);
+
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
+                                        builder: (context) =>
                                             DiaryDetailScreen(diary: entry),
                                       ),
                                     );
