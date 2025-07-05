@@ -140,7 +140,7 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 // 일기장 카드
                 Card(
                   elevation: 6,
@@ -185,7 +185,7 @@ class _DiaryEntryScreenState extends State<DiaryEntryScreen>
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
                 // 버튼
                 Center(
                   child: Consumer<DiaryProvider>(
@@ -264,7 +264,7 @@ class _NoteLinePainter extends CustomPainter {
       ..color = Colors.brown.shade100
       ..strokeWidth = 1;
 
-    final lineHeight = 32.0;
+    final lineHeight = 30.0;
     for (double y = lineHeight; y < size.height; y += lineHeight) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
