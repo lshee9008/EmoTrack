@@ -30,7 +30,7 @@ class DatabaseService {
     return await databaseFactory.openDatabase(
       dbPath,
       options: OpenDatabaseOptions(
-        version: 1,
+        version: 2,
         onCreate: (db, version) async {
           await db.execute('''
             CREATE TABLE diaries (
@@ -40,15 +40,20 @@ class DatabaseService {
               summary TEXT,
               emotion TEXT,
               weather TEXT,
-              song TEXT
+              song TEXT,
+              youtube_url TEXT
             )
           ''');
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          if (oldVersion < 2) {
+            await db.execute('ALTER TABLE diaries ADD COLUMN youtube_url TEXT');
+          }
         },
       ),
     );
   }
 
-  // ✅ INSERT
   Future<void> insertDiary(DiaryEntry entry) async {
     final db = await database;
     await db.insert(
@@ -58,14 +63,12 @@ class DatabaseService {
     );
   }
 
-  // ✅ SELECT ALL
   Future<List<DiaryEntry>> getDiaries() async {
     final db = await database;
     final maps = await db.query('diaries');
     return maps.map((map) => DiaryEntry.fromMap(map)).toList();
   }
 
-  // ✅ UPDATE
   Future<void> updateDiary(DiaryEntry entry) async {
     final db = await database;
     await db.update(
@@ -76,7 +79,6 @@ class DatabaseService {
     );
   }
 
-  // ✅ DELETE
   Future<void> deleteDiary(int id) async {
     final db = await database;
     await db.delete('diaries', where: 'id = ?', whereArgs: [id]);

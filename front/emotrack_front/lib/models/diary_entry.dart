@@ -1,4 +1,3 @@
-// DiaryEntry 모델 수정
 import 'dart:convert';
 
 class DiaryEntry {
@@ -8,7 +7,8 @@ class DiaryEntry {
   final String summary;
   final String emotion;
   final String weather;
-  final Map<String, dynamic> song; // ✅ 변경됨
+  final Map<String, dynamic> song;
+  final String? youtube_url;
 
   DiaryEntry({
     this.id,
@@ -17,7 +17,8 @@ class DiaryEntry {
     required this.summary,
     required this.emotion,
     required this.weather,
-    required this.song, // ✅ Map
+    required this.song,
+    this.youtube_url,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,19 +29,23 @@ class DiaryEntry {
       'summary': summary,
       'emotion': emotion,
       'weather': weather,
-      'song': jsonEncode(song), // ✅ DB 저장시 문자열로
+      'song': jsonEncode(song),
+      'youtube_url': youtube_url,
     };
   }
 
   factory DiaryEntry.fromMap(Map<String, dynamic> map) {
     return DiaryEntry(
       id: map['id'],
-      diary: map['diary'],
-      date: map['date'],
-      summary: map['summary'],
-      emotion: map['emotion'],
-      weather: map['weather'],
-      song: jsonDecode(map['song']), // ✅ DB에서 불러올 때 다시 Map으로
+      diary: map['diary'] ?? '',
+      date: map['date'] ?? '',
+      summary: map['summary'] ?? '',
+      emotion: map['emotion'] ?? '',
+      weather: map['weather'] ?? '',
+      song: map['song'] != null
+          ? jsonDecode(map['song'])
+          : {'title': 'Unknown', 'artist': 'Unknown'},
+      youtube_url: map['youtube_url'],
     );
   }
 }

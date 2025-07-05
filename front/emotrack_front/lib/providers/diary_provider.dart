@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import '../models/diary_entry.dart';
+import '../models/diary_request.dart';
 import '../services/api_service.dart';
 import '../services/database_service.dart';
-import '../models/diary_request.dart';
-import '../models/diary_response.dart';
 
 class DiaryProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -16,30 +13,33 @@ class DiaryProvider with ChangeNotifier {
   List<DiaryEntry> get diaries => _diaries;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchDiaries() async {
-    _isLoading = true;
-    notifyListeners();
+  DiaryProvider() {
+    _loadDiaries();
+  }
+
+  Future<void> _loadDiaries() async {
     _diaries = await _databaseService.getDiaries();
-    _isLoading = false;
     notifyListeners();
   }
 
-  Future<DiaryEntry> analyzeDiary(String diary, String date) async {
+  Future<DiaryEntry> analyzeDiary(String diaryText, String date) async {
     _isLoading = true;
     notifyListeners();
+
     try {
-      final request = DiaryRequest(diary: diary, date: date);
+      final request = DiaryRequest(diary: diaryText, date: date);
       final response = await _apiService.analyzeDiary(request);
       final entry = DiaryEntry(
-        diary: diary,
+        diary: diaryText,
         date: date,
         summary: response.summary,
         emotion: response.emotion,
         weather: response.weather,
         song: response.song,
+        youtube_url: response.youtube_url,
       );
       await _databaseService.insertDiary(entry);
-      await fetchDiaries();
+      await _loadDiaries();
       return entry;
     } finally {
       _isLoading = false;
@@ -47,13 +47,8 @@ class DiaryProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateDiary(DiaryEntry entry) async {
-    await _databaseService.updateDiary(entry);
-    await fetchDiaries();
-  }
-
   Future<void> deleteDiary(int id) async {
     await _databaseService.deleteDiary(id);
-    await fetchDiaries();
+    await _loadDiaries();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/diary_entry.dart';
 
 class DiaryDetailScreen extends StatefulWidget {
@@ -14,10 +15,10 @@ class DiaryDetailScreen extends StatefulWidget {
 class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    print(widget.diary.song);
+    print(widget.diary.summary);
     final theme = Theme.of(context);
     final dateStyle = GoogleFonts.nanumPenScript(
-      fontSize: 28,
+      fontSize: 24,
       color: Colors.brown.shade700,
       fontWeight: FontWeight.bold,
     );
@@ -43,12 +44,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           style: GoogleFonts.nanumPenScript(
             fontSize: 28,
             color: Colors.brown.shade800,
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18.0),
+        padding: const EdgeInsets.all(24.0),
         child: Hero(
           tag: 'diary_${widget.diary.date}',
           child: Card(
@@ -73,20 +73,16 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 날짜
                   Center(child: Text(widget.diary.date, style: dateStyle)),
-                  const SizedBox(height: 20),
-                  // 내용
+                  const SizedBox(height: 32),
                   Text('📖 내용', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Text(widget.diary.diary, style: contentStyle),
                   const SizedBox(height: 28),
-                  // 요약
                   Text('✍️ 요약', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Text(widget.diary.summary, style: contentStyle),
                   const SizedBox(height: 28),
-                  // 감정
                   Text('🧠 감정', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Chip(
@@ -112,7 +108,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                     elevation: 2,
                   ),
                   const SizedBox(height: 28),
-                  // 날씨
                   Text('🌤 날씨', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Row(
@@ -127,7 +122,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 28),
-                  // 노래
                   Text('🎵 오늘의 추천 곡', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Container(
@@ -146,13 +140,36 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: Text(
-                        widget.diary.song['artist'] ?? 'Unknown Artist',
-                        style: contentStyle.copyWith(fontSize: 18),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.diary.song['artist'] ?? 'Unknown Artist',
+                            style: contentStyle.copyWith(fontSize: 18),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              final url =
+                                  widget.diary.youtube_url ??
+                                  'https://www.youtube.com';
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url));
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('링크를 열 수 없습니다.')),
+                                );
+                              }
+                            },
+                            child: Text(
+                              'YouTube에서 듣기',
+                              style: contentStyle.copyWith(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      onTap: () {
-                        // 음악 재생 처리 가능
-                      },
                     ),
                   ),
                 ],

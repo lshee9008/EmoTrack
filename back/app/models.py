@@ -13,3 +13,4 @@ class DiaryResponse(BaseModel):
     emotion: str
     weather: str
     song: dict
+    youtube_url: str  # YouTube 링크 추가
