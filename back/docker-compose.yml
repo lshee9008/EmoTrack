@@ -35,7 +35,7 @@ services:
       - tutorial-vol:/ollama
     networks:
       - tutorial-net
-    entrypoint: ["/usr/bin/bash", "/pull-llama3_2.sh"]
+    entrypoint: ["/usr/bin/bash", "/pull-deepseek-r1.sh"]
 
 networks:
   tutorial-net:

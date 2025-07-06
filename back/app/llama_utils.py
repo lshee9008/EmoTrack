@@ -1,56 +1,73 @@
 import requests
-import json
 import re
-from youtubesearchpython import VideosSearch
-
 
 def analyze_diary(diary_text: str) -> tuple[str, str]:
+    # 프롬프트: LLM이 정확히 요약과 감정을 정해진 형식으로 출력하게 유도
     prompt = f"""
-다음은 사용자의 일기입니다:
+다음은 사용자의 일기입니다.(꼭! 한국어로 작성해주세요.)
 
 \"\"\"{diary_text}\"\"\"
 
-너는 사용자의 하루를 함께 살아가는 비밀 친구야.
-진심으로 공감하고 다정하게 위로해주는 말투로 아래 형식에 꼭 맞춰 응답해줘.
-**반드시 아래 JSON 형식만** 출력하고, 다른 설명은 절대 붙이지 마.
+이 일기를 아래 형식으로 요약해 주세요:
 
-```json
-{{
-  "summary": "오늘은 마음이 조금 힘들었지만, 그래도 잘 버텨낸 너는 참 대단해.",
-  "emotion": "슬픔"
-}}
+요약: (하루를 함께 회상하는 말투로 최대 50자 이내로 요약)
+감정: (슬픔, 행복, 분노, 중립 중 하나만 정확히 단어로 출력)
+
+형식을 반드시 지켜주세요. 예:
+요약: 친구랑 놀아서 즐거운 하루였어
+감정: 행복
 """
+
     try:
+        # Ollama 서버로 요청 전송
+        print(f"Sending request to Ollama for diary: {diary_text}")
         response = requests.post(
-            "http://ollama:11434/api/generate",
+            "http://ollama:11434/api/generate",  # Ollama 서버 주소
             json={
-                "model": "llama3.2:3b",
-                "prompt": prompt,
-                "stream": False,
-                "options": {
-                    "temperature": 0.7,
-                    "top_p": 0.9,
-                    "num_predict": 200,
-                }
+                "model": "deepseek-r1:8b",           # 사용할 모델 지정
+                "prompt": prompt,                 # 사용자 일기 + 요청 프롬프트
+                "stream": False,                  # 전체 응답을 한 번에 받음
+                # "options": {
+                #     "temperature": 0.7,           # 창의성/일관성 조절
+                #     "top_p": 0.9,
+                #     "num_predict": 150,           # 예측 최대 길이 (더 길게 확보)
+                #     "stop": ["\n\n", "user:"],    # 응답 멈추는 조건
+                # }
             },
-            timeout=30
+            # timeout=180  # 타임아웃 설정
         )
-        response.raise_for_status()
+        response.raise_for_status()  # HTTP 오류 발생 시 예외
+
+        # 응답 텍스트 가져오기
         output = response.json().get("response", "").strip()
-        print("📥 LLaMA 일기 응답:\n", output)
 
-        match = re.search(r"\{[\s\S]*?\}", output)
-        if not match:
-            raise ValueError("JSON 응답이 감지되지 않음")
+        # 원시 응답 출력 (디버깅용)
+        print("----- RAW LLaMA OUTPUT -----")
+        print(repr(output))  # repr로 \n, \t 등 이스케이프도 확인 가능
+        print("----------------------------")
 
-        parsed = json.loads(match.group())
+        # 요약 추출: "요약: ..." 또는 "요약 - ..." 등 다양하게 대응
+        summary_match = re.search(
+            r"요약\s*[:\-]?\s*(.*?)(?=\n|감정\s*[:\-])",
+            output,
+            re.DOTALL
+        )
 
-        summary = parsed.get("summary", "요약 실패").strip()
-        emotion = parsed.get("emotion", "감정 분석 실패").strip()
+        # 감정 추출: 감정 키워드 중 하나가 있는지 확인
+        emotion_match = re.search(
+            r"감정\s*[:\-]?\s*(슬픔|행복|분노|중립)",
+            output
+        )
 
-        return summary[:100], emotion  # 최대 100자 제한
+        # 결과가 있으면 추출하고 없으면 실패로 처리
+        summary = summary_match.group(1).strip()[:50] if summary_match else "요약 실패"
+        emotion = emotion_match.group(1).strip() if emotion_match else "감정 분석 실패"
 
-    except Exception as e:
-        print(f"❌ analyze_diary 오류: {e}")
+        # 파싱 결과 출력
+        print(f"Parsed summary: {summary}, emotion: {emotion}")
+        return summary, emotion
+
+    except requests.exceptions.RequestException as e:
+        # 네트워크 오류, 시간 초과 등의 예외 처리
+        print(f"Error while calling Ollama: {e}")
         return "요약 실패", "감정 분석 실패"
-
