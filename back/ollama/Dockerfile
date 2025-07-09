@@ -1,3 +1,3 @@
 FROM ollama/ollama
 
-COPY ./pull-llama3.2.sh /pull-llama3.2.sh
+COPY ./pull-gemma3.sh /pull-gemma3.sh

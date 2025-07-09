@@ -25,7 +25,7 @@ def analyze_diary(diary_text: str) -> tuple[str, str]:
         response = requests.post(
             "http://ollama:11434/api/generate",  # Ollama 서버 주소
             json={
-                "model": "llama3.2:3b",           # 사용할 모델 지정
+                "model": "gemma3:4b",           # 사용할 모델 지정
                 "prompt": prompt,                 # 사용자 일기 + 요청 프롬프트
                 "stream": False,                  # 전체 응답을 한 번에 받음
                 # "options": {
