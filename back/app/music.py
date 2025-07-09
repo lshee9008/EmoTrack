@@ -23,11 +23,11 @@ Respond ONLY in this JSON format — no extra text:
                 "stream": False,
                 "options": {
                     "temperature": 0.7,
-                    "num_predict": 150,
+                    "num_predict": 50,
                     "top_p": 0.9,
                 }
             },
-            timeout=20
+        
         )
         response.raise_for_status()
         raw_output = response.json().get("response", "").strip()

@@ -28,12 +28,12 @@ def analyze_diary(diary_text: str) -> tuple[str, str]:
                 "model": "deepseek-r1:8b",           # 사용할 모델 지정
                 "prompt": prompt,                 # 사용자 일기 + 요청 프롬프트
                 "stream": False,                  # 전체 응답을 한 번에 받음
-                # "options": {
-                #     "temperature": 0.7,           # 창의성/일관성 조절
-                #     "top_p": 0.9,
-                #     "num_predict": 150,           # 예측 최대 길이 (더 길게 확보)
-                #     "stop": ["\n\n", "user:"],    # 응답 멈추는 조건
-                # }
+                "options": {
+                    "temperature": 0.7,           # 창의성/일관성 조절
+                    "top_p": 0.9,
+                    "num_predict": 50,           # 예측 최대 길이 (더 길게 확보)
+                    
+                }
             },
             # timeout=180  # 타임아웃 설정
         )
