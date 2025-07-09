@@ -5,3 +5,4 @@ requests
 python-dotenv
 google-api-python-client==2.111.0
 youtube-search-python
+httpx==0.23.3
