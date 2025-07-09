@@ -13,14 +13,14 @@ def preload_model():
         response = requests.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "deepseek-r1:8b",
+                "model": "qwen3:4b",
                 "prompt": "모델 로딩 테스트입니다.",
                 "stream": False,
-                "options": {
-                    "temperature": 0.8,
-                    "num_predict": 100,
-                    "top_p": 0.9,
-                }
+                # "options": {
+                #     "temperature": 0.8,
+                #     "num_predict": 100,
+                #     "top_p": 0.9,
+                # }
             }
         )
         print("모델 preload 성공:", response.json().get("response", ""))

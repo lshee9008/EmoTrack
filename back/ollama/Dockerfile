@@ -1,3 +1,3 @@
 FROM ollama/ollama
 
-COPY ./pull-deepseek-r1.sh /pull-deepseek-r1.sh
+COPY ./pull-qwen3.sh /pull-qwen3.sh

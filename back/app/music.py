@@ -18,14 +18,14 @@ Respond ONLY in this JSON format — no extra text:
         response = requests.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "deepseek-r1:8b",
+                "model": "qwen3:4b",
                 "prompt": prompt,
                 "stream": False,
-                "options": {
-                    "temperature": 0.7,
-                    "num_predict": 50,
-                    "top_p": 0.9,
-                }
+                # "options": {
+                #     "temperature": 0.7,
+                #     "num_predict": 50,
+                #     "top_p": 0.9,
+                # }
             },
         
         )
