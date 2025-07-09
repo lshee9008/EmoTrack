@@ -1,3 +1,3 @@
 FROM ollama/ollama
 
-COPY ./pull-qwen3.sh /pull-qwen3.sh
+COPY ./pull-llama3.2.sh /pull-llama3.2.sh

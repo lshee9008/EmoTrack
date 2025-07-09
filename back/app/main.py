@@ -13,7 +13,7 @@ def preload_model():
         response = requests.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "qwen3:4b",
+                "model": "llama3.2:3b",
                 "prompt": "모델 로딩 테스트입니다.",
                 "stream": False,
                 # "options": {

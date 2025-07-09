@@ -18,7 +18,7 @@ Respond ONLY in this JSON format — no extra text:
         response = requests.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "qwen3:4b",
+                "model": "llama3.2:3b",
                 "prompt": prompt,
                 "stream": False,
                 # "options": {
