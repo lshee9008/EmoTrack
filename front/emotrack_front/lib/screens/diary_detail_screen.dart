@@ -111,6 +111,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                   Text('🌤 날씨', style: sectionTitleStyle),
                   const SizedBox(height: 12),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
                         _getWeatherIcon(widget.diary.weather),
@@ -118,9 +119,17 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                         size: 28,
                       ),
                       const SizedBox(width: 12),
-                      Text(widget.diary.weather, style: contentStyle),
+                      Expanded(
+                        child: Text(
+                          widget.diary.weather,
+                          style: contentStyle,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
                     ],
                   ),
+
                   const SizedBox(height: 28),
                   Text('🎵 오늘의 추천 곡', style: sectionTitleStyle),
                   const SizedBox(height: 12),
